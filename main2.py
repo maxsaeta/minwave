@@ -11,19 +11,19 @@ Device.pin_factory = LGPIOFactory()
 
 # --- HARDWARE: DIRECCIÓN (Ya configurado) ---
 dir_pwm = PWMOutputDevice(12)
-dir_in1 = DigitalOutputDevice(20)
-dir_in2 = DigitalOutputDevice(21)
+dir_in1 = DigitalOutputDevice(21)
+dir_in2 = DigitalOutputDevice(20)
 
 # --- HARDWARE: TRACCIÓN (NUEVO) ---
 trac_pwm = PWMOutputDevice(13)     # Pin PWM para velocidad
-trac_in1 = DigitalOutputDevice(19)  # Sentido avance
-trac_in2 = DigitalOutputDevice(26)  # Sentido retroceso
+trac_in1 = DigitalOutputDevice(16)  # Sentido avance
+trac_in2 = DigitalOutputDevice(19)  # Sentido retroceso
 
 # --- CONFIGURACIÓN ---
 FRAME_WIDTH = 320
 CENTER_X = FRAME_WIDTH // 2
-KP_STEER = 0.005  
-DEADZONE = 10     
+KP_STEER = 0.01
+DEADZONE = 10
 
 # Configuración de distancia (basada en pixeles del tag)
 TAG_TARGET_WIDTH = 80  # El robot se detendrá cuando el tag mida esto de ancho (aprox. 50cm)
@@ -88,10 +88,10 @@ def main():
 
             if len(detections) > 0:
                 tag = detections[0]
-                
+
                 # 1. Cálculo de Dirección (Eje X)
                 error_x = tag.center[0] - CENTER_X
-                
+
                 # 2. Cálculo de Distancia (Ancho del tag en pixeles)
                 # Calculamos la distancia entre las esquinas superiores del tag
                 tag_width = np.linalg.norm(tag.corners[0] - tag.corners[1])
