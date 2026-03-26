@@ -1,0 +1,52 @@
+Paso 1: Instalar dependencias del Sistema (Fuera del venv)
+Necesitamos los compiladores y las librerías de desarrollo que pip no puede instalar por sí solo. Ejecuta esto en la terminal:
+
+Bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y build-essential swig liblgpio-dev python3-dev libopencv-dev git
+¿Por qué esto? swig es el traductor que faltaba para lgpio, y build-essential es el "horno" para cocinar (compilar) las librerías de los AprilTags.
+
+Paso 2: Limpieza y Reentrada al Entorno Virtual
+Para evitar basura de intentos fallidos, vamos a refrescar el entorno:
+
+Bash
+cd ~/robot_car/minwave/
+# Si ya tienes la carpeta venv, bórrala para empezar limpio (opcional pero recomendado)
+# rm -rf venv 
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+Paso 3: Instalación de Dependencias Críticas
+Ahora instalaremos las librerías una por una para identificar si alguna falla. No uses el requirements.txt todavía, hazlo así para asegurar el tiro:
+
+Las bases matemáticas y de visión:
+
+Bash
+pip install numpy opencv-python pyserial
+El driver de los motores (L298):
+
+Bash
+pip install rpi-lgpio
+El cerebro de los AprilTags:
+(Este suele fallar si no instalaste build-essential en el Paso 1)
+
+Bash
+pip install dt-apriltags
+Paso 4: Verificación de "Salud" del Sistema
+Antes de intentar mover el carro, verifica que Python realmente "ve" las librerías. Ejecuta esta línea:
+
+Bash
+python -c "import cv2; import dt_apriltags; import lgpio; print('✅ TODO INSTALADO CORRECTAMENTE')"
+Paso 5: El Punto Ciego (Permisos de Hardware)
+Incluso con todo instalado, si tu usuario electrobot no tiene permiso para tocar los pines o la cámara, el script fallará. Asegúrate de estar en los grupos correctos:
+
+Bash
+sudo usermod -a -G video,gpio,i2c $USER
+(Luego de esto, lo ideal es cerrar sesión y volver a entrar o reiniciar la Pi).
+
+Análisis Estratégico de Fallos Comunes:
+Si dt-apriltags falla: Es probable que falte la librería de C de AprilTags. Si eso sucede, dímelo; tendremos que clonar el repo oficial de C y compilarlo a mano (es un proceso de 2 minutos).
+
+Si cv2 falla: A veces en la RPi falta libGL.so.1. Si al correr main3.py ves ese error, se soluciona con: sudo apt install libatlas-base-dev.
+
+¿Qué mensaje te dio el comando de verificación del Paso 4? Si salió el check verde, ya puedes lanzar python main3.py.
